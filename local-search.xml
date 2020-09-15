@@ -4,27 +4,17 @@
   
   
   <entry>
-    <title>Hello World</title>
-    <link href="/16107.html"/>
-    <url>/16107.html</url>
+    <title>https知识点</title>
+    <link href="/50840.html"/>
+    <url>/50840.html</url>
     
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><pre><code class="hljs bash">$ hexo new <span class="hljs-string">&quot;My New Post&quot;</span></code></pre><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><pre><code class="hljs bash">$ hexo server</code></pre><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre><code class="hljs bash">$ hexo generate</code></pre><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><pre><code class="hljs bash">$ hexo deploy</code></pre><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+    <content type="html"><![CDATA[<p>所谓https即http secure/http over ssl/http over tls，在http基础上增加一层加密。</p><p>流程如下：</p><ol><li>Client Hello（C -&gt; S）</li></ol><ul><li>可选TLS版本</li><li>可选加密套件（对称加密算法，非对称加密算法、hash算法）</li><li>随机数</li></ul><ol start="2"><li>Server Hello （S -&gt; C）</li></ol><ul><li>返回客户端和服务端均支持的TLS版本、算法</li><li>随机数</li></ul><ol start="3"><li>Server Status（S -&gt; C）</li></ol><ul><li>服务器公钥</li><li>服务器公钥签名（hash）（<code>证书签发机构私钥</code>签名<code>服务器公钥</code>后的hash值）</li><li>用于验证公钥签名（hash）的公钥（<code>证书签发机构</code>公钥）</li></ul><ol start="4"><li>客户端加密数据（C -&gt; S）</li></ol><ul><li><p>Client Key Exchange：Pre-master secret（随机数）通过三个随机数生成Master Secret (防止replay attack)</p></li><li><p>Change Cipher Spec：使用加密通信</p></li><li><p>Encrypted Handshake Message：通过客户端加密密钥加密(准备发送Encrypted handshake message前)的握手消息</p></li><li><p>Finished</p></li></ul><ol start="5"><li>服务端加密数据（S -&gt; C）</li></ol><ul><li>Change Cipher Spec：使用加密通信</li><li>Encrypted Handshake Message：通过客户端加密密钥加密(准备发送Encrypted handshake message前)的握手消息</li><li>Finished</li></ul><ol start="6"><li>数据传输</li></ol>]]></content>
     
-    
-    <categories>
-      
-      <category>Flutter</category>
-      
-    </categories>
     
     
     <tags>
       
-      <tag>Flutter</tag>
-      
-      <tag>Android</tag>
-      
-      <tag>iOS</tag>
+      <tag>Protocol</tag>
       
     </tags>
     
