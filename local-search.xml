@@ -4,6 +4,87 @@
   
   
   <entry>
+    <title>Pod install失败</title>
+    <link href="/13695.html"/>
+    <url>/13695.html</url>
+    
+    <content type="html"><![CDATA[<h2 id="1、NoMethodError-undefined-method-size’-for-nil-NilClass"><a href="#1、NoMethodError-undefined-method-size’-for-nil-NilClass" class="headerlink" title="1、NoMethodError - undefined method `size’ for nil:NilClass"></a>1、NoMethodError - undefined method `size’ for nil:NilClass</h2><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"><span class="hljs-comment">## Error</span></span>​```NoMethodError - undefined method `size&#x27; for nil:NilClass/Users/su/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0/gems/ruby-macho-1.4.0/lib/macho/macho_file.rb:455:in `populate_mach_header&#x27;/Users/su/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0/gems/ruby-macho-1.4.0/lib/macho/macho_file.rb:233:in `populate_fields&#x27;/Users/su/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0/gems/ruby-macho-1.4.0/lib/macho/macho_file.rb:55:in `initialize_from_bin&#x27;/Users/su/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0/gems/ruby-macho-1.4.0/lib/macho/macho_file.rb:33:in `new_from_bin&#x27;/Users/su/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0/gems/ruby-macho-1.4.0/lib/macho/fat_file.rb:365:in `block in populate_machos&#x27;.........――― TEMPLATE END ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――[!] Oh no, an error occurred.......</code></pre><p>解决方案来源：<a href="https://github.com/CocoaPods/CocoaPods/issues/8377#issuecomment-554915212">https://github.com/CocoaPods/CocoaPods/issues/8377</a></p><pre><code class="hljs shell">flutter cleanrm -Rf ios/Podsrm -Rf ios/.symlinksrm -Rf ios/Flutter/Flutter.frameworkrm -Rf ios/Flutter/Flutter.podspec</code></pre><h2 id="2、-iOS使用纯OC开发的项目导入Swift模块"><a href="#2、-iOS使用纯OC开发的项目导入Swift模块" class="headerlink" title="2、 iOS使用纯OC开发的项目导入Swift模块"></a>2、 iOS使用纯OC开发的项目导入Swift模块</h2><ol><li>创建一个Swift文件，名称随意</li><li>根据提示选择<code>Create Bridging Header</code>。如果没有提示，请自行搜索如何创建。</li></ol><img src="https://cdn.jsdelivr.net/gh/nullptrX/assets/images/20200926234853.png"/>]]></content>
+    
+    
+    <categories>
+      
+      <category>帮助中心</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Flutter</tag>
+      
+      <tag>iOS</tag>
+      
+      <tag>Pod</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Xcode打包Framework</title>
+    <link href="/63128.html"/>
+    <url>/63128.html</url>
+    
+    <content type="html"><![CDATA[<h1 id="1、新建Framework工程"><a href="#1、新建Framework工程" class="headerlink" title="1、新建Framework工程"></a>1、新建Framework工程</h1><img src="https://cdn.jsdelivr.net/gh/nullptrX/assets/images/20200926230552.png"/><h1 id="2、添加静态库和头文件"><a href="#2、添加静态库和头文件" class="headerlink" title="2、添加静态库和头文件"></a>2、添加静态库和头文件</h1><img src="https://cdn.jsdelivr.net/gh/nullptrX/assets/images/20200926231007.png"/><ul><li>必须有一个头文件与Target名称一致，如上面<code>SecSocks</code>对应有一个<code>SecSocks.h</code>，内容如下</li></ul><pre><code class="hljs objective-c">&#x2F;&#x2F;! Project version number for SecSocks_iOS.FOUNDATION_EXPORT double SecSocks_iOSVersionNumber;&#x2F;&#x2F;! Project version string for Tun2Socks_iOS.FOUNDATION_EXPORT const unsigned char SecSocks_iOSVersionString[];&#x2F;&#x2F; In this header, you should import all the public headers of your framework using statements like #import &lt;SecSocks_iOS&#x2F;PublicHeader.h&gt;#import &quot;SocksInterface.h&quot;</code></pre><ul><li><code>SocksInterface.h</code>内容</li></ul><pre><code class="hljs objective-c">#import &lt;Foundation&#x2F;Foundation.h&gt;@class SocksInterface;@interface SocksInterface : NSObject+ (nonnull SocksInterface *)sharedInterface;+ (void)sayHello:(NSString*)username;@end</code></pre><img src="https://cdn.jsdelivr.net/gh/nullptrX/assets/images/20200926232832.png"/><h1 id="3、项目根目录创建构建脚本"><a href="#3、项目根目录创建构建脚本" class="headerlink" title="3、项目根目录创建构建脚本"></a>3、项目根目录创建构建脚本</h1><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash">!/usr/bin/env bash</span>set -e<span class="hljs-meta">#</span><span class="bash"> <span class="hljs-built_in">set</span> -x</span>BASE_PWD=&quot;$PWD&quot;SCRIPT_DIR=&quot;$( cd &quot;$( dirname &quot;$&#123;BASH_SOURCE[0]&#125;&quot; )&quot; &gt;/dev/null &amp;&amp; pwd )&quot;FWNAME=&quot;SecSocks&quot;<span class="hljs-meta">#</span><span class="bash"> Laverage Carthage to build frameworks</span>BUILD_DIR=$( mktemp -d )echo $&#123;BUILD_DIR&#125;cd $&#123;BUILD_DIR&#125;carthage build --configuration Release --no-use-binaries --no-skip-current --derived-data $&#123;BUILD_DIR&#125;/DerivedData --project-directory $&#123;SCRIPT_DIR&#125;rm -rf $&#123;BUILD_DIR&#125;cd $&#123;BASE_PWD&#125;<span class="hljs-meta">#</span><span class="bash"> rm -rf Frameworks/&#123;ios,macos&#125;/<span class="hljs-variable">$&#123;FWNAME&#125;</span>.framework*</span><span class="hljs-meta">#</span><span class="bash"> mkdir -p Frameworks/&#123;ios,macos&#125;</span>rm -rf ../Frameworks/ios/$&#123;FWNAME&#125;.framework*mkdir -p ../Frameworks/iosmv -f Carthage/Build/iOS/Static/$&#123;FWNAME&#125;.framework ../Frameworks/ios<span class="hljs-meta">#</span><span class="bash"> 动态库</span><span class="hljs-meta">#</span><span class="bash"> mv -f Carthage/Build/iOS/Static/<span class="hljs-variable">$&#123;FWNAME&#125;</span>.framework.dSYM Frameworks/ios</span><span class="hljs-meta">#</span><span class="bash"> mv -f Carthage/Build/Mac/<span class="hljs-variable">$&#123;FWNAME&#125;</span>.framework Frameworks/macos</span><span class="hljs-meta">#</span><span class="bash"> mv -f Carthage/Build/Mac/<span class="hljs-variable">$&#123;FWNAME&#125;</span>.framework.dSYM Frameworks/macos</span><span class="hljs-meta">#</span><span class="bash"> Cleanup</span>rm -rf Carthagerm -rf DerivedData</code></pre><p>执行<code>./create_framework.sh</code>完成，生成同时支持iOS，Simulator的Framework。</p><h1 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h1><ol><li>Xcode 12 打包失败</li></ol><pre><code class="hljs shell">/var/folders/hl/jq639f2n7qj827g7v3l3x90r0000gn/T/tmp.XniuKdN2*** xcodebuild output can be found in /var/folders/hl/jq639f2n7qj827g7v3l3x90r0000gn/T/carthage-xcodebuild.hyH6HM.log*** Building scheme &quot;SecSocks&quot; in SecSocks.xcodeprojBuild FailedTask failed with exit code 1:/usr/bin/xcrun lipo -create /var/folders/hl/jq639f2n7qj827g7v3l3x90r0000gn/T/tmp.XniuKdN2/DerivedData/Build/Intermediates.noindex/ArchiveIntermediates/SecSocks/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/SecSocks.framework/SecSocks /var/folders/hl/jq639f2n7qj827g7v3l3x90r0000gn/T/tmp.XniuKdN2/DerivedData/Build/Products/Release-iphonesimulator/SecSocks.framework/SecSocks -output /Users/su/Documents/Projects/BaoYaTu/project/QuickCN/proxy/secsocks/frameworks/SecSocks/Carthage/Build/iOS/Static/SecSocks.framework/SecSocksThis usually indicates that project itself failed to compile. Please check the xcodebuild log for more details: /var/folders/hl/jq639f2n7qj827g7v3l3x90r0000gn/T/carthage-xcodebuild.hyH6HM.log</code></pre><p>单独执行上面<code>/usr/bin/xcrun lipo create xxx</code>，报错信息如下</p><pre><code class="hljs verilog">fatal error: /Applications/Xcode<span class="hljs-variable">.app</span>/Contents/Developer/Toolchains/XcodeDefault<span class="hljs-variable">.xctoolchain</span>/usr/bin/lipo: /<span class="hljs-keyword">var</span>/folders/hl/jq639f2n7qj827g7v3l3x90r0000gn/T/tmp<span class="hljs-variable">.XniuKdN2</span>/DerivedData/Build/Intermediates<span class="hljs-variable">.noindex</span>/ArchiveIntermediates/SecSocks/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/SecSocks<span class="hljs-variable">.framework</span>/SecSocks <span class="hljs-keyword">and</span> /<span class="hljs-keyword">var</span>/folders/hl/jq639f2n7qj827g7v3l3x90r0000gn/T/tmp<span class="hljs-variable">.XniuKdN2</span>/DerivedData/Build/Products/Release-iphonesimulator/SecSocks<span class="hljs-variable">.framework</span>/SecSocks have the same architectures (arm64) <span class="hljs-keyword">and</span> can&#x27;t be in the same fat <span class="hljs-keyword">output</span> file</code></pre><p>合并<code>iOS</code>和<code>Simulator</code>生成的静态库时，两个库都有<code>arm64</code>的，<code>Simulator</code>生成的库本不应该有<code>arm64</code>的。</p><p>解决方案：<code>command</code>+<code>N</code> 创建<code>Framework.xcconfig</code>文件</p><img src="https://cdn.jsdelivr.net/gh/nullptrX/assets/images/20200926234013.png"/><pre><code class="hljs xcconfig">EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_simulator__NATIVE_ARCH_64_BIT_x86_64&#x3D;arm64 arm64e armv7 armv7s armv6 armv8EXCLUDED_ARCHS&#x3D;$(inherited) $(EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_$(EFFECTIVE_PLATFORM_SUFFIX)__NATIVE_ARCH_64_BIT_$(NATIVE_ARCH_64_BIT))</code></pre><img src="https://cdn.jsdelivr.net/gh/nullptrX/assets/images/20200926234239.png"/><p>重新执行<code>./create_framework.sh</code>，打包完成。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>帮助中心</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>iOS</tag>
+      
+      <tag>Xcode</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>构建openssl</title>
+    <link href="/43304.html"/>
+    <url>/43304.html</url>
+    
+    <content type="html"><![CDATA[<pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash">!/usr/bin/env bash</span><span class="hljs-meta">#</span><span class="bash"> Yay shell scripting! This script builds a static version of</span><span class="hljs-meta">#</span><span class="bash"> OpenSSL <span class="hljs-variable">$&#123;OPENSSL_VERSION&#125;</span> <span class="hljs-keyword">for</span> iOS and OSX that contains code <span class="hljs-keyword">for</span> armv6, armv7, armv7s, arm64, i386, x86_64.</span>DIR=`pwd`cd openssl-1.1.1gbuild_library() &#123;ARCH=$1./Configure iphoneos-cross --prefix=`pwd`/build/$ARCHsed -i &quot;.bak&quot; &quot;s!^CC=.*!CC=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -arch $ARCH!&quot; Makefilesed -i &quot;.bak&quot; &#x27;s!^CFLAGS=.*!CFLAGS=-DDSO_DLFCN -DHAVE_DLFCN_H -DNDEBUG -DOPENSSL_THREADS -DOPENSSL_NO_STATIC_ENGINE -DOPENSSL_PIC -DOPENSSLDIR=$(OPENSSLDIR) -DENGINESDIR=$(ENGINESDIR) -O3 -D_REENTRANT -isysroot $(CROSS_TOP)/SDKs/$(CROSS_SDK) -fno-common!&#x27; Makefilemakemake installmake clean&#125;<span class="hljs-meta">#</span><span class="bash"> sdk上层路径</span>export CROSS_TOP=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer<span class="hljs-meta">#</span><span class="bash"> sdk文件</span>export CROSS_SDK=iPhoneOS14.0.sdkbuild_library armv7build_library armv7sbuild_library arm64<span class="hljs-meta">#</span><span class="bash"> sdk上层路径</span>export CROSS_TOP=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer<span class="hljs-meta">#</span><span class="bash"> sdk文件</span>export CROSS_SDK=iPhoneSimulator14.0.sdkbuild_library i386build_library x86_64cd buildlipo -create armv7/lib/libcrypto.a armv7s/lib/libcrypto.a arm64/lib/libcrypto.a i386/lib/libcrypto.a x86_64/lib/libcrypto.a  -output libcrypto.alipo -create armv7/lib/libssl.a armv7s/lib/libssl.a arm64/lib/libssl.a i386/lib/libssl.a x86_64/lib/libssl.a -output libssl.acd $DIRecho &quot;all done&quot;</code></pre><h3 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h3><pre><code class="hljs shell">./build_openssl.sh</code></pre>]]></content>
+    
+    
+    <categories>
+      
+      <category>脚本</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>openssl</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>集成Google登录</title>
     <link href="/9993.html"/>
     <url>/9993.html</url>
@@ -52,6 +133,12 @@
     
     <content type="html"><![CDATA[<p>所谓https即http secure/http over ssl/http over tls，在http基础上增加一层加密。</p><p>流程如下：</p><ol><li>Client Hello（C -&gt; S）</li></ol><ul><li>可选TLS版本</li><li>可选加密套件（对称加密算法，非对称加密算法、hash算法）</li><li>随机数</li></ul><ol start="2"><li>Server Hello （S -&gt; C）</li></ol><ul><li>返回客户端和服务端均支持的TLS版本、算法</li><li>随机数</li></ul><ol start="3"><li>Server Status（S -&gt; C）</li></ol><ul><li>服务器公钥</li><li>服务器公钥签名（hash）（<code>证书签发机构私钥</code>签名<code>服务器公钥</code>后的hash值）</li><li>用于验证公钥签名（hash）的公钥（<code>证书签发机构</code>公钥）</li></ul><ol start="4"><li>客户端加密数据（C -&gt; S）</li></ol><ul><li><p>Client Key Exchange：Pre-master secret（随机数）通过三个随机数生成Master Secret (防止replay attack)</p></li><li><p>Change Cipher Spec：使用加密通信</p></li><li><p>Encrypted Handshake Message：通过客户端加密密钥加密(准备发送Encrypted handshake message前)的握手消息</p></li><li><p>Finished</p></li></ul><ol start="5"><li>服务端加密数据（S -&gt; C）</li></ol><ul><li>Change Cipher Spec：使用加密通信</li><li>Encrypted Handshake Message：通过客户端加密密钥加密(准备发送Encrypted handshake message前)的握手消息</li><li>Finished</li></ul><ol start="6"><li>数据传输</li></ol>]]></content>
     
+    
+    <categories>
+      
+      <category>基础</category>
+      
+    </categories>
     
     
     <tags>
