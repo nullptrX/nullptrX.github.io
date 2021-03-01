@@ -16,6 +16,7 @@ lock.lock()
 &#125; <span class="hljs-keyword">finally</span> &#123;
   lock.unlock()
 &#125;</code></pre></div><div class="hljs"><pre><code class="hljs kotlin"><span class="hljs-comment">// 主要用途</span>
+<span class="hljs-comment">// 读时都可读，写时不可读和写。</span>
 <span class="hljs-keyword">val</span> executors = Executors.newCachedThreadPool()
 <span class="hljs-keyword">val</span> lock = ReentrantReadWriteLock()
 
@@ -41,7 +42,7 @@ executors.execute(readRunnable)
 executors.execute(writeRunnable)
 executors.execute(readRunnable)
 executors.execute(writeRunnable)
-</code></pre></div><p>读时都可读，写时不可读。</p><ul><li>死锁</li></ul><div class="hljs"><pre><code class="hljs kotlin"><span class="hljs-keyword">val</span> obj1 = Any()
+</code></pre></div><ul><li>死锁</li></ul><div class="hljs"><pre><code class="hljs kotlin"><span class="hljs-keyword">val</span> obj1 = Any()
 <span class="hljs-keyword">val</span> obj2 = Any()
 
 <span class="hljs-keyword">var</span> i1 = <span class="hljs-number">0</span>
