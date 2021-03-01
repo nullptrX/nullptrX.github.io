@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>Flutter常见问题</title>
+    <link href="/23058.html"/>
+    <url>/23058.html</url>
+    
+    <content type="html"><![CDATA[<h2 id="1-Pod-install-失败"><a href="#1-Pod-install-失败" class="headerlink" title="1. Pod install 失败"></a>1. Pod install 失败</h2><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"><span class="hljs-comment">## Error</span></span>​```NoMethodError - undefined method `size&#x27; for nil:NilClass/Users/su/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0/gems/ruby-macho-1.4.0/lib/macho/macho_file.rb:455:in `populate_mach_header&#x27;/Users/su/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0/gems/ruby-macho-1.4.0/lib/macho/macho_file.rb:233:in `populate_fields&#x27;/Users/su/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0/gems/ruby-macho-1.4.0/lib/macho/macho_file.rb:55:in `initialize_from_bin&#x27;/Users/su/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0/gems/ruby-macho-1.4.0/lib/macho/macho_file.rb:33:in `new_from_bin&#x27;/Users/su/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0/gems/ruby-macho-1.4.0/lib/macho/fat_file.rb:365:in `block in populate_machos&#x27;.........――― TEMPLATE END ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――[!] Oh no, an error occurred.......</code></pre><p>关键：NoMethodError - undefined method `size’ for nil:NilClass</p><p>解决方案来源：<a href="https://github.com/CocoaPods/CocoaPods/issues/8377#issuecomment-554915212">https://github.com/CocoaPods/CocoaPods/issues/8377</a></p><pre><code class="hljs shell">flutter cleanrm -Rf ios/Podsrm -Rf ios/.symlinksrm -Rf ios/Flutter/Flutter.frameworkrm -Rf ios/Flutter/Flutter.podspec</code></pre><h2 id="2-build报错"><a href="#2-build报错" class="headerlink" title="2. build报错"></a>2. build报错</h2><p>Command PhaseScriptExecution failed with a nonzero exit code</p><p><code>/bin/sh &quot;$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh&quot;</code></p><p>如果是flutter构建脚本报错，大概率是Xcode项目与flutter版本不兼容。</p><p>解决方案：项目根目录下执行如下命令，重新构建即可</p><pre><code class="hljs shell">rm -rf ios/Runner.xcodeprojflutter create .</code></pre><p>Solution: Your Xcode project is incompatible with this version of Flutter. Run <code>rm -rf ios/Runner.xcodeproj</code> and <code>flutter create .</code> to regenerate.</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Flutter</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Flutter</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Pod install失败</title>
     <link href="/13695.html"/>
     <url>/13695.html</url>
@@ -146,6 +171,44 @@
       <tag>协议</tag>
       
     </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>线程同步</title>
+    <link href="/36425.html"/>
+    <url>/36425.html</url>
+    
+    <content type="html"><![CDATA[<ul><li>synchronized</li></ul><p>自动加解锁保证方法内部或代码块内部资源同时最多只能有一个线程访问</p><ul><li>volatile</li></ul><p>使被标记属性具有原子性（不可拆分）</p><p>只对基本类型 (byte、char、short、int、long、float、double、 boolean) 的赋值操作和对象的引用赋值操作有效。</p><pre><code class="hljs kotlin">i++=&gt; (不具有原子性)<span class="hljs-keyword">val</span> temp = i + <span class="hljs-number">1</span>i = temp</code></pre><ul><li>AtomicInteger AtomicBoolean 等</li></ul><p>存在ABA问题（当前内存的值一开始是A，被另外一个线程先改为B然后再改为A，那么当前线程访问的时候发现是A，则认为它没有被其他线程访问过，对于链表来说，存在风险）</p><pre><code class="hljs kotlin"><span class="hljs-keyword">val</span> <span class="hljs-keyword">data</span> = AtomicInteger(<span class="hljs-number">0</span>)<span class="hljs-comment">// 通过比较内存中的值来判断是否改变，如果已经改变，则获取后重新比较，重复往返直至可以赋值</span><span class="hljs-keyword">data</span>.incrementAndGet() <span class="hljs-comment">// ++i</span><span class="hljs-keyword">data</span>.getAndIncrement() <span class="hljs-comment">// i++</span></code></pre><ul><li>AtomicStampedReference<T></li></ul><p>解决ABA问题（维护一个int类型的标记stamp，每次更新数据后更新stamp）,每次验证数据的差异时，也验证stamp是否改变。</p><pre><code class="hljs kotlin"><span class="hljs-keyword">val</span> <span class="hljs-keyword">data</span> = AtomicStampedReference&lt;<span class="hljs-built_in">Int</span>&gt;(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<span class="hljs-keyword">var</span> stamp = <span class="hljs-keyword">data</span>.stamp<span class="hljs-keyword">data</span>.compareAndSet(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, stamp, stamp + <span class="hljs-number">1</span>)stamp = <span class="hljs-keyword">data</span>.stamp<span class="hljs-keyword">data</span>.compareAndSet(<span class="hljs-number">2</span>, <span class="hljs-number">1</span>, stamp, stamp + <span class="hljs-number">1</span>)</code></pre><ul><li>Lock / ReentrantReadWriteLock</li></ul><p>手动锁，必须手动解锁。synchronized是自动加解锁</p><pre><code class="hljs kotlin"><span class="hljs-keyword">val</span> lock = ReentrantLock()lock.lock()<span class="hljs-keyword">try</span> &#123;&#125; <span class="hljs-keyword">finally</span> &#123;  lock.unlock()&#125;</code></pre><pre><code class="hljs kotlin"><span class="hljs-comment">// 主要用途</span><span class="hljs-keyword">val</span> executors = Executors.newCachedThreadPool()<span class="hljs-keyword">val</span> lock = ReentrantReadWriteLock()<span class="hljs-keyword">val</span> readLock = lock.readLock()<span class="hljs-keyword">val</span> writeLock = lock.writeLock()<span class="hljs-keyword">val</span> readRunnable = Runnable &#123;  <span class="hljs-keyword">for</span> (i <span class="hljs-keyword">in</span> <span class="hljs-number">0</span> until <span class="hljs-number">1000000</span>) &#123;    readLock.withLock &#123;      println(x)    &#125;  &#125;&#125;<span class="hljs-keyword">val</span> writeRunnable = Runnable &#123;  <span class="hljs-keyword">for</span> (i <span class="hljs-keyword">in</span> <span class="hljs-number">0</span> until <span class="hljs-number">1000000</span>) &#123;    writeLock.withLock &#123;      x++    &#125;  &#125;&#125;executors.execute(readRunnable)executors.execute(writeRunnable)executors.execute(readRunnable)executors.execute(writeRunnable)</code></pre><p>读时都可读，写时不可读。</p><ul><li>死锁</li></ul><pre><code class="hljs kotlin"><span class="hljs-keyword">val</span> obj1 = Any()<span class="hljs-keyword">val</span> obj2 = Any()<span class="hljs-keyword">var</span> i1 = <span class="hljs-number">0</span><span class="hljs-keyword">var</span> i2 = <span class="hljs-number">0</span><span class="hljs-comment">// 两个锁被一起锁住</span><span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">test1</span><span class="hljs-params">()</span></span> &#123;  synchronized(obj1) &#123;    i1 = <span class="hljs-number">0</span>    synchronized(obj2) &#123;      i2 = <span class="hljs-number">0</span>    &#125;  &#125;&#125;<span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">test2</span><span class="hljs-params">()</span></span> &#123;  synchronized(obj2) &#123;    i2 = <span class="hljs-number">0</span>    synchronized(obj1) &#123;      i1 = <span class="hljs-number">0</span>    &#125;  &#125;&#125;</code></pre><ul><li>锁范围(monitor)</li></ul><pre><code class="hljs kotlin"><span class="hljs-comment">// 作用于当前类</span>synchronized(X::<span class="hljs-class"><span class="hljs-keyword">class</span>) </span>&#123;  &#125;<span class="hljs-comment">// 作用于当前对象</span>synchronized(<span class="hljs-keyword">this</span>) &#123;  &#125;<span class="hljs-meta">@Synchronized</span><span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span>: <span class="hljs-built_in">Unit</span> &#123;&#125;<span class="hljs-comment">// 作用于obj</span><span class="hljs-keyword">val</span> obj = Any()synchronized(obj) &#123;  &#125;</code></pre>]]></content>
+    
+    
+    <categories>
+      
+      <category>Android</category>
+      
+    </categories>
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>线程与进程</title>
+    <link href="/52642.html"/>
+    <url>/52642.html</url>
+    
+    <content type="html"><![CDATA[<ul><li><p>一个运行中的软件可能包含多个进程</p></li><li><p>一个运行中的进程可能包含多个线程</p></li></ul><p>进程：所有线程执行完成即结束</p><p>线程：执行完逻辑就结束</p><ol><li>UI线程不会结束：</li></ol><p>无限循环刷新界面，没有异常就不会结束</p><ol start="2"><li>线程与进程的关系：</li></ol><p>线程强依赖于进程，线程间不存在相互依赖的关系，一个线程结束不会对其他线程造成什么影响。</p><ol start="3"><li>主线程与其他线程的区别：</li></ol><p>主线程是由Java虚拟机启动时创建的。main方法执行时，主线程已经创建好并运行，因此无法设置为守护进程。除此之外，与其他线程无区别。</p><ol start="4"><li>主线程结束，子线程未结束</li></ol><p>两者没有关系，按照操作系统的理论，进程是资源分配的基本单位，线程是CPU调度的基本单位。对于CPU来说，两种线程都只是个普通的线程。进程的资源是线程共享的，只要进程还在，线程就可以正常执行，换句话说线程是强依赖于进程的。（Java虚拟机结束：所有存活的线程都是守护线程。只要还有非守护线程，虚拟机就不会结束。所以把子线程设置为<code>守护线程</code>时，主线程结束，虚拟机就会结束，最后子线程就会结束了。）</p><pre><code class="hljs kotlin"><span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;  thread(isDaemon = <span class="hljs-literal">false</span>) &#123;    <span class="hljs-keyword">for</span> (i <span class="hljs-keyword">in</span> <span class="hljs-number">0</span>..<span class="hljs-number">1_000_000</span>) println(i)  &#125;  println(<span class="hljs-string">&quot;done&quot;</span>)&#125;输出：done<span class="hljs-number">1</span><span class="hljs-number">2</span><span class="hljs-number">3</span>...</code></pre><ol start="5"><li>Thread, Runnable, ThreadFactory, Executor</li></ol><p>Thread：执行一个简单的线程任务</p><p>Runnable：可被多个Thread复用</p><p>ThreadFactory：主要用于标记线程名字，方便调试（阿里Java编码规范）</p><img src="https://cdn.jsdelivr.net/gh/nullptrX/assets/images/20210301155135.png"/><p>Executor: </p><p>常用: newCachedThreadPool()</p><pre><code class="hljs kotlin"><span class="hljs-keyword">val</span> executors = Executors.newCachedThreadPool()executors.execute(...)</code></pre><p>批量处理: newFixedThreadPool()</p><pre><code class="hljs kotlin"><span class="hljs-keyword">val</span> executors = Executors.newCachedThreadPool()executors.execute(...)# 不会马上结束，只是不再接受新的任务，注意与shutdownNow的区别executors.shutdown()</code></pre>]]></content>
+    
+    
+    <categories>
+      
+      <category>Android</category>
+      
+    </categories>
+    
     
   </entry>
   
